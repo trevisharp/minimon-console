@@ -6,6 +6,5 @@ public enum DamageType
     Magical,
     Weak,
     Strong,
-    Real,
-    Fake
+    Real
 }
