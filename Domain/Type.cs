@@ -3,66 +3,53 @@ namespace Minimon.Domain;
 public class Type
 {
     public required string Name { get; init; }
-    public required string[] HighAdvantageSet { get; init; }
     public required string[] AdvantageSet { get; init; }
-    public required string[] WeakSet { get; init; }
-    public required string[] HighWeakSet { get; init; }
 
-    public static readonly Type Normal = Create("Normal");
-
-    public static readonly Type Fire = Create("Fire",
-        highadvgAgainst: [ "Plant" ]
+    public static readonly Type Normal = Create("Normal",
+        advantages: [ "Magnetic", "Air", "Dark" ]
     );
-    public static readonly Type Water = Create("Water", 
-        highadvgAgainst: [ "Fire" ]
+
+    public static readonly Type Magma = Create("Magma",
+        advantages: [ "Plant", "Normal" ]
+    );
+    public static readonly Type Aquatic = Create("Aquatic", 
+        advantages: [ "Magma", "Normal" ]
     );
     public static readonly Type Plant = Create("Plant",
-        highadvgAgainst: [ "Water" ]
+        advantages: [ "Aquatic", "Normal" ]
     );
 
     public static readonly Type Eletric = Create("Eletric",
-        advgAgainst: [ "Ice" ], 
-        highweakAgainst: [ "Eletric" ]
+        advantages: [ "Aquatic", "Ice" ]
     );
     public static readonly Type Rock = Create("Rock",
-        advgAgainst: [ "Eletric" ],
-        highweakAgainst: [ "Rock" ]
+        advantages: [ "Plant", "Eletric" ]
     );
     public static readonly Type Ice = Create("Ice",
-        advgAgainst: [ "Rock" ],
-        highweakAgainst: [ "Ice" ]
+        advantages: [ "Magma", "Rock" ]
     );
 
-    public static readonly Type Dragon = Create("Dragon",
-        advgAgainst: [ "Plant", "Ice" ], 
-        weakAgainst: [ "Fairy", "Ghost" ]
+    public static readonly Type Magnetic = Create("Magnetic",
+        advantages: [ "Eletric", "Rock" ]
     );
-    public static readonly Type Ghost = Create("Ghost",
-        advgAgainst: [ "Fire", "Eletric" ],
-        weakAgainst: [ "Dragon", "Fairy" ]
+    public static readonly Type Air = Create("Air",
+        advantages: [ "Rock", "Ice" ]
     );
-    public static readonly Type Fairy = Create("Fairy",
-        advgAgainst: [ "Water", "Rock" ],
-        weakAgainst: [ "Dragon", "Ghost" ]
+    public static readonly Type Dark = Create("Dark",
+        advantages: [ "Ice", "Eletric" ]
     );
 
     static Type[]? types = null;
     public static Type[] Types => types ??= [ 
         Normal,
-        Fire, Water, Plant,
+        Magma, Aquatic, Plant,
         Eletric, Rock, Ice,
-        Dragon, Ghost, Fairy
+        Magnetic, Air, Dark
     ];
 
-    static Type Create(string name, 
-        string[]? highadvgAgainst = null, string[]? advgAgainst = null, 
-        string[]? weakAgainst = null, string[]? highweakAgainst = null)
-        => new()
-        {
+    static Type Create(string name, string[]? advantages = null)
+        => new() {
             Name = name,
-            HighAdvantageSet = highadvgAgainst ?? [],
-            AdvantageSet = advgAgainst ?? [],
-            WeakSet = weakAgainst ?? [],
-            HighWeakSet = highweakAgainst ?? []
+            AdvantageSet = advantages ?? [],
         };
 }
