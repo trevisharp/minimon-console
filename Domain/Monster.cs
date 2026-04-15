@@ -1,3 +1,5 @@
+using System;
+
 namespace Minimon.Domain;
 
 public class Monster
@@ -26,6 +28,8 @@ public class Monster
         CurrentMagicalShield = MagicalDefense;
         CurrentStamina = Stamina;
         CurrentEffect = Effect.None;
+
+        OnHeal?.Invoke();
     }
 
     public XPEarnResult EarnExperience(int xp)
@@ -88,6 +92,8 @@ public class Monster
 
     public DamageResult Recive(DamageType type, int value)
     {
+        OnReceiveDamage?.Invoke(value);
+
         var (PhyBreak, MagBreak) = type switch
         {
             DamageType.Physical => HandlePhysical(value),
@@ -98,10 +104,20 @@ public class Monster
             _ => (false, false)
         };
 
+        if (CurrentEffect == 0)
+            OnFaint?.Invoke();
+
+        if (PhyBreak)
+            OnPhysicalShieldBreak?.Invoke();
+
+        if (MagBreak)
+            OnMagicalShieldBreak?.Invoke();
+        
         return new(CurrentLife == 0, PhyBreak, MagBreak);
 
         (bool, bool) HandlePhysical(int damage)
         {
+            OnReceivePhysicalDamage?.Invoke(damage);
             CurrentPhysicalShield = Inflicts(CurrentPhysicalShield, ref damage);
             CurrentLife = Inflicts(CurrentLife, ref damage);
             return (CurrentPhysicalShield == 0, false);
@@ -109,6 +125,8 @@ public class Monster
 
         (bool, bool) HandleMagical(int damage)
         {
+            OnReceiveMagicalDamage?.Invoke(damage);
+
             CurrentMagicalShield = Inflicts(CurrentMagicalShield, ref damage);
             CurrentLife = Inflicts(CurrentLife, ref damage);
             return (false, CurrentMagicalShield == 0);
@@ -116,6 +134,8 @@ public class Monster
 
         (bool, bool) HandleStrong(int damage)
         {
+            OnReceiveStrongDamage?.Invoke(damage);
+
             if (CurrentMagicalShield == 0)
             {
                 CurrentLife = Inflicts(CurrentLife, ref damage);
@@ -142,6 +162,8 @@ public class Monster
 
         (bool, bool) HandleWeak(int damage)
         {
+            OnReceiveWeakDamage?.Invoke(damage);
+
             if (CurrentMagicalShield == 0 && CurrentPhysicalShield == 0)
             {
                 CurrentLife = Inflicts(CurrentLife, ref damage);
@@ -184,6 +206,8 @@ public class Monster
 
         (bool, bool) HandleReal(int damage)
         {
+            OnReceiveRealDamage?.Invoke(damage);
+
             CurrentLife = Inflicts(CurrentLife, ref damage);
             return (false, false);
         }
@@ -198,7 +222,13 @@ public class Monster
             return false;
         
         CurrentEffect = effect;
+        OnReceiveEffect?.Invoke(effect);
         return true;
+    }
+
+    public void FindEnemy(Monster enemy)
+    {
+        OnEnemyFind?.Invoke(enemy);
     }
 
     public int CurrentXP => Experience - NeededXP(Level);
@@ -209,6 +239,19 @@ public class Monster
     public int SpeedIndex => 16 * SpeedIndexUpgrade + RoundByLevel(Species.SpeedIndex);
     public int Stamina => 4 * StaminaUpgrade + RoundByLevel(8 * Species.BaseStamina);
     public int Ability => AbilityUpgrade + RoundByLevel(Species.BaseAbility);
+
+    public event Action? OnFaint;
+    public event Action? OnHeal;
+    public event Action? OnPhysicalShieldBreak;
+    public event Action? OnMagicalShieldBreak;
+    public event Action<int>? OnReceiveDamage;
+    public event Action<int>? OnReceivePhysicalDamage;
+    public event Action<int>? OnReceiveMagicalDamage;
+    public event Action<int>? OnReceiveStrongDamage;
+    public event Action<int>? OnReceiveWeakDamage;
+    public event Action<int>? OnReceiveRealDamage;
+    public event Action<Effect>? OnReceiveEffect;
+    public event Action<Monster>? OnEnemyFind;
 
     int RoundByLevel(int value)
         => (int)float.Round((Level + 20) * value / 40);

@@ -1,13 +1,11 @@
 namespace Minimon.Domain;
 
 public abstract class Move(
-    string name, MoveType moveType, 
-    Type type, int baseDamage, 
-    MovePriority priority)
+    string name, Type type,
+    int speed, int cost)
 {
     public string Name { get; init; } = name;
-    public MoveType MoveType { get; init; } = moveType;
-    public MovePriority Priority { get; init; } = priority;
     public Type Type { get; set; } = type;
-    public int BaseDamage { get; set; } = baseDamage;
+    public int Speed { get; init; } = speed;
+    public int Cost { get; init; } = cost;
 }
