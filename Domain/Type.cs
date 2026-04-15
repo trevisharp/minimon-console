@@ -6,7 +6,13 @@ public class Type
     public required string[] AdvantageSet { get; init; }
 
     public static readonly Type Normal = Create("Normal",
-        advantages: [ "Magnetic", "Air", "Dark" ]
+        advantages: [ "Light", "Dark", "Air" ]
+    );
+    public static readonly Type Light = Create("Light",
+        advantages: [ "Magnetic" ]
+    );
+    public static readonly Type Dark = Create("Dark",
+        advantages: [ "Gem" ]
     );
 
     public static readonly Type Magma = Create("Magma",
@@ -35,7 +41,7 @@ public class Type
     public static readonly Type Air = Create("Air",
         advantages: [ "Rock", "Ice" ]
     );
-    public static readonly Type Dark = Create("Dark",
+    public static readonly Type Gem = Create("Gem",
         advantages: [ "Ice", "Eletric" ]
     );
 
@@ -44,7 +50,8 @@ public class Type
         Normal,
         Magma, Aquatic, Plant,
         Eletric, Rock, Ice,
-        Magnetic, Air, Dark
+        Magnetic, Air, Gem,
+        Light, Dark
     ];
 
     static Type Create(string name, string[]? advantages = null)
