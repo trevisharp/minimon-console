@@ -7,23 +7,7 @@ public class DefaultDamageService : IDamageService
     public int ApplyTypeAdvantage(int damage, Type damageType, Monster defensor)
     {
         var typeA = defensor.Species.MainType.Name;
-        var typeB = defensor.Species.SecondType.Name;
-        
-        var set = damageType.HighAdvantageSet;
-        if (set.Contains(typeA) || set.Contains(typeB))
-            return 2 * damage;
-
-        set = damageType.AdvantageSet;
-        if (set.Contains(typeA) || set.Contains(typeB))
-            return 3 * damage / 2;
-        
-        set = damageType.WeakSet;
-        if (set.Contains(typeA) || set.Contains(typeB))
-            return damage / 2;
-        
-        set = damageType.HighWeakSet;
-        if (set.Contains(typeA) || set.Contains(typeB))
-            return damage / 4;
+        var typeB = defensor.Species.SecondType?.Name;
         
         return damage;
     }
