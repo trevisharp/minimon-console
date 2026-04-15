@@ -1,5 +1,3 @@
-using System;
-
 namespace Minimon.Domain;
 
 public class Monster
@@ -14,6 +12,21 @@ public class Monster
     public int SpeedIndexUpgrade { get; private set; } = 0;
     public int StaminaUpgrade { get; private set; } = 0;
     public int AbilityUpgrade { get; private set; } = 0;
+    
+    public int CurrentLife { get; private set; }
+    public int CurrentPhysicalShield { get; private set; }
+    public int CurrentMagicalShield { get; private set; }
+    public int CurrentStamina { get; private set; }
+    public Effect CurrentEffect { get; private set; }
+
+    public void Heal()
+    {
+        CurrentLife = Life;
+        CurrentPhysicalShield = PhysicalDefense;
+        CurrentMagicalShield = MagicalDefense;
+        CurrentStamina = Stamina;
+        CurrentEffect = Effect.None;
+    }
 
     public XPEarnResult EarnExperience(int xp)
     {
@@ -29,7 +42,7 @@ public class Monster
         // needed = 10 * (S(n + 1) - 2)
         // So:
         // needed = 10 * (F(n + 3) - 3)
-        var needed = 10 * (Fibonnacci(Level + 3) - 3);
+        var needed = NeededXP(Level + 1);
         var winUpgrade = false;
 
         while (Experience < needed && Level < 20)
@@ -73,6 +86,59 @@ public class Monster
         return false;
     }
 
+    public DamageResult Recive(DamageType type, int value)
+    {
+        var (PhyBreak, MagBreak) = type switch
+        {
+            DamageType.Physical => HandlePhysical(value),
+            DamageType.Magical  => HandleMagical(value),
+            DamageType.Strong   => HandleStrong(value),
+            DamageType.Weak     => HandleWeak(value),
+            DamageType.Real     => HandleReal(value),
+            DamageType.Fake     => HandleFake(value),
+            _ => (false, false)
+        };
+
+        return new(CurrentLife == 0, PhyBreak, MagBreak);
+
+        (bool, bool) HandlePhysical(int damage)
+        {
+            CurrentPhysicalShield = Inflicts(CurrentPhysicalShield, ref damage);
+            CurrentLife = Inflicts(CurrentLife, ref damage);
+            return (CurrentPhysicalShield == 0, false);
+        }
+
+        (bool, bool) HandleMagical(int damage)
+        {
+            CurrentMagicalShield = Inflicts(CurrentMagicalShield, ref damage);
+            CurrentLife = Inflicts(CurrentLife, ref damage);
+            return (false, CurrentMagicalShield == 0);
+        }
+
+        (bool, bool) HandleStrong(int damage)
+        {
+            return (false, false);
+        }
+
+        (bool, bool) HandleWeak(int damage)
+        {
+            return (false, false);
+        }
+
+        (bool, bool) HandleReal(int damage)
+        {
+            CurrentLife = Inflicts(CurrentLife, ref damage);
+            return (false, false);
+        }
+
+        (bool, bool) HandleFake(int damage)
+        {
+            return (false, false);
+        }
+    }
+
+    public int CurrentXP => Experience - NeededXP(Level);
+    public int LevelXP => Fibonnacci(Level + 1);
     public int Life => 2 * LifeUpgrade + RoundByLevel(2 * Species.BaseLife);
     public int PhysicalDefense => 4 * PhysicalDefenseUpgrade + RoundByLevel(4 * Species.BasePhysicalDefense);
     public int MagicalDefense => 4 * MagicalDefenseUpgrade + RoundByLevel(4 * Species.BaseMagicalDefense);
@@ -82,6 +148,35 @@ public class Monster
 
     int RoundByLevel(int value)
         => (int)float.Round((Level + 20) * value / 40);
+    
+    static int Inflicts(int defense, ref int damage)
+    {
+        if (damage > defense)
+        {
+            damage -= defense;
+            return 0;
+        }
+
+        defense -= damage;
+        damage = 0;
+        return defense;
+    }
+
+    static int NeededXP(int level)
+    {
+        if (level < 2)
+            return 0;
+        
+        // S(n) = Sum of Fibonnacci = F(n + 2) - 1
+        // needed = Level to get level n 
+        //  = Sum of all xp on next level
+        //  = 10 * S(n)
+        // But level 0 and level 1 may be desconsidered, so:
+        // needed = 10 * (S(n) - 2)
+        // So:
+        // needed = 10 * (F(n + 2) - 3)
+        return 10 * (Fibonnacci(level + 2) - 3);
+    }
 
     static int Fibonnacci(int n)
     {
@@ -101,7 +196,14 @@ public class Monster
     }
 
     public static Monster FromSpecies(Species species)
-        => new() { Species = species };
+    {
+        var monster = new Monster {
+            Species = species
+        };
+        monster.Heal();
+        return monster;
+    }
 
     public record XPEarnResult(bool WinXp, bool WinLevel, bool WinUpgrade);
+    public record DamageResult(bool Fainted, bool PhysicalBreak, bool MagicalBreak);
 }
