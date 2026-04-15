@@ -189,6 +189,18 @@ public class Monster
         }
     }
 
+    public bool Apply(Effect effect)
+    {
+        if (CurrentEffect != Effect.None)
+            return false;
+        
+        if (CurrentEffect == effect)
+            return false;
+        
+        CurrentEffect = effect;
+        return true;
+    }
+
     public int CurrentXP => Experience - NeededXP(Level);
     public int LevelXP => Fibonnacci(Level + 1);
     public int Life => 2 * LifeUpgrade + RoundByLevel(2 * Species.BaseLife);
