@@ -13,4 +13,5 @@ public class Species
     public required int SpeedIndex { get; init; }
     public required int BaseStamina { get; init; }
     public required int BaseAbility { get; init; }
+    public required MoveSet MoveSet { get; init; }
 }
