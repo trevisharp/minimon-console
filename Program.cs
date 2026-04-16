@@ -1,25 +1,35 @@
 ﻿using Minimon.Domain;
 
-var test = new Species
-{
-    BaseAbility = 0,
-    BaseLife = 0,
-    BaseMagicalDefense = 0,
-    BasePhysicalDefense = 0,
-    BaseStamina = 0,
-    Evolution = null,
-    MainType = null,
-    Name = null,
-    SecondType = null,
-    SpeedIndex = 0,
-    Talent = null
-};
+var creature = Creature.FromSpecies(Indexer.Simeolil);
+creature.EarnExperience(300_000);
+for (int i = 0; i < 8; i++)
+    creature.Upgrade(Status.Life);
+for (int i = 0; i < 4; i++)
+creature.Upgrade(Status.MagicalDefense);
 
-for (int i = 1; i < 21; i++)
+print(creature);
+
+creature.Heal();
+print(creature);
+
+creature.Evolve();
+print(creature);
+
+creature.Evolve();
+print(creature);
+
+creature.Heal();
+print(creature);
+
+void print(Creature creature)
 {
-    var monster = Creature.FromSpecies(test, i);
-    monster.EarnExperience(500);
-    System.Console.WriteLine($"Level {monster.Level} ({monster.CurrentXP} / {monster.LevelXP})");
-    System.Console.WriteLine($"XP: {monster.Experience}");
-    System.Console.WriteLine();
+    System.Console.WriteLine(
+        $"""
+        {creature.Species.Name}
+        HP: {creature.CurrentLife} / {creature.Life}
+        ST: {creature.CurrentStamina} / {creature.Stamina}
+        PS: {creature.CurrentPhysicalShield} / {creature.PhysicalDefense}
+        MS: {creature.CurrentMagicalShield} / {creature.MagicalDefense}
+        """
+    );
 }

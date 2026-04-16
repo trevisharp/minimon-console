@@ -2,11 +2,11 @@ using System;
 
 namespace Minimon.Domain;
 
-public class Creature(Species species, int level = 1)
+public class Creature(Species species)
 {
     public Species Species { get; private set; } = species;
-    public int Level { get; private set; } = level;
-    public int Experience { get; private set; } = NeededXP(level);
+    public int Level { get; private set; } = 1;
+    public int Experience { get; private set; } = 0;
     public int UpgradePoints { get; private set; } = 0;
     public int LifeUpgrade { get; private set; } = 0;
     public int PhysicalDefenseUpgrade { get; private set; } = 0;
@@ -82,7 +82,7 @@ public class Creature(Species species, int level = 1)
             if (!value.HasValue)
                 return false;
             
-            if (value >= 6)
+            if (value >= 8)
                 return false;
             
             prop.SetValue(this, value + 1);
@@ -280,7 +280,7 @@ public class Creature(Species species, int level = 1)
     public int Life => 2 * LifeUpgrade + RoundByLevel(2 * Species.BaseLife);
     public int PhysicalDefense => 4 * PhysicalDefenseUpgrade + RoundByLevel(4 * Species.BasePhysicalDefense);
     public int MagicalDefense => 4 * MagicalDefenseUpgrade + RoundByLevel(4 * Species.BaseMagicalDefense);
-    public int Stamina => 4 * StaminaUpgrade + RoundByLevel(8 * Species.BaseStamina);
+    public int Stamina => StaminaUpgrade + RoundByLevel(2 * Species.BaseStamina);
     public int Ability => AbilityUpgrade + RoundByLevel(Species.BaseAbility);
 
     public event Action? OnFaint;
@@ -349,9 +349,9 @@ public class Creature(Species species, int level = 1)
         return s1;
     }
 
-    public static Creature FromSpecies(Species species, int level = 1)
+    public static Creature FromSpecies(Species species)
     {
-        var creature = new Creature(species, level);
+        var creature = new Creature(species);
         creature.Heal();
         return creature;
     }
