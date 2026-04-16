@@ -260,6 +260,12 @@ public class Creature(Species species, int level = 1)
         return true;
     }
     
+    public void CommitTurn()
+    {
+        CurrentStamina = Stamina;
+        OnTurn?.Invoke();
+    }
+
     public bool CanEvolve =>
         (Level, Species.Evolution, Species.Evolution?.Evolution) switch
         {
@@ -288,6 +294,7 @@ public class Creature(Species species, int level = 1)
     public event Action<int>? OnReceiveWeakDamage;
     public event Action<int>? OnReceiveRealDamage;
     public event Action<Effect>? OnReceiveEffect;
+    public event Action? OnTurn;
     public event Action<Creature>? OnEnemyFind;
 
     int RoundByLevel(int value)
