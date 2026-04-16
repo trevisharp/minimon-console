@@ -2,7 +2,7 @@ using System;
 
 namespace Minimon.Domain;
 
-public class Monster(Species species, int level = 1)
+public class Creature(Species species, int level = 1)
 {
     public Species Species { get; private set; } = species;
     public int Level { get; private set; } = level;
@@ -73,13 +73,16 @@ public class Monster(Species species, int level = 1)
             return false;
 
         var propName = $"{status}Upgrade";
-        foreach (var prop in typeof(Monster).GetProperties())
+        foreach (var prop in typeof(Creature).GetProperties())
         {
             if (prop.Name != propName)
                 continue;
             
             var value = prop.GetValue(this) as int?;
             if (!value.HasValue)
+                return false;
+            
+            if (value >= 6)
                 return false;
             
             prop.SetValue(this, value + 1);
@@ -235,20 +238,17 @@ public class Monster(Species species, int level = 1)
         return true;
     }
 
-    public void FindEnemy(Monster enemy)
+    public void FindEnemy(Creature enemy)
     {
         OnEnemyFind?.Invoke(enemy);
     }
 
-    public int GetSpeed(int moveSpeed)
+    public int GetSpeed(int moveSpeed, int advantage)
     {
-        var speedIndex =
-            33 * SpeedUpgrade + 
-            RoundByLevel(16 * Species.SpeedIndex);
-        
-        var speedBase = 1024 * (moveSpeed + SpeedUpgrade);
-
-        return speedBase + speedIndex;
+        var extraSpeed = SpeedUpgrade + advantage;
+        var speedBase = 4096 * (moveSpeed + extraSpeed);
+        var speedIndex = 8 * Species.SpeedIndex + 33 * extraSpeed;
+        return RoundByLevel(speedBase + speedIndex);
     }
 
     public bool Evolve()
@@ -288,7 +288,7 @@ public class Monster(Species species, int level = 1)
     public event Action<int>? OnReceiveWeakDamage;
     public event Action<int>? OnReceiveRealDamage;
     public event Action<Effect>? OnReceiveEffect;
-    public event Action<Monster>? OnEnemyFind;
+    public event Action<Creature>? OnEnemyFind;
 
     int RoundByLevel(int value)
         => (int)float.Round((Level + 20) * value / 40);
@@ -342,11 +342,11 @@ public class Monster(Species species, int level = 1)
         return s1;
     }
 
-    public static Monster FromSpecies(Species species, int level = 1)
+    public static Creature FromSpecies(Species species, int level = 1)
     {
-        var monster = new Monster(species, level);
-        monster.Heal();
-        return monster;
+        var creature = new Creature(species, level);
+        creature.Heal();
+        return creature;
     }
 
     public record XPEarnResult(bool WinXp, bool WinLevel, bool WinUpgrade);

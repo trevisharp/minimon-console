@@ -17,7 +17,7 @@ var test = new Species
 
 for (int i = 1; i < 21; i++)
 {
-    var monster = Monster.FromSpecies(test, i);
+    var monster = Creature.FromSpecies(test, i);
     monster.EarnExperience(500);
     System.Console.WriteLine($"Level {monster.Level} ({monster.CurrentXP} / {monster.LevelXP})");
     System.Console.WriteLine($"XP: {monster.Experience}");
