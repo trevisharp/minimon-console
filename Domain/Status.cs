@@ -5,7 +5,7 @@ public enum Status
     Life,
     PhysicalDefense,
     MagicalDefense,
-    SpeedIndex,
+    Speed,
     Stamina,
     Ability
 }

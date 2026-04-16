@@ -2,16 +2,16 @@ using System;
 
 namespace Minimon.Domain;
 
-public class Monster
+public class Monster(Species species, int level = 1)
 {
-    public required Species Species { get; init; }
-    public int Level { get; private set; } = 1;
-    public int Experience { get; private set; } = 0;
+    public Species Species { get; private set; } = species;
+    public int Level { get; private set; } = level;
+    public int Experience { get; private set; } = NeededXP(level);
     public int UpgradePoints { get; private set; } = 0;
     public int LifeUpgrade { get; private set; } = 0;
     public int PhysicalDefenseUpgrade { get; private set; } = 0;
     public int MagicalDefenseUpgrade { get; private set; } = 0;
-    public int SpeedIndexUpgrade { get; private set; } = 0;
+    public int SpeedUpgrade { get; private set; } = 0;
     public int StaminaUpgrade { get; private set; } = 0;
     public int AbilityUpgrade { get; private set; } = 0;
     
@@ -56,7 +56,7 @@ public class Monster
             (winUpgrade, UpgradePoints) = Level switch
             {
                 6 => (true, UpgradePoints + 2),
-                11 or 15 => (true, UpgradePoints + 3),
+                10 or 16 => (true, UpgradePoints + 3),
                 20 => (true, UpgradePoints + 4),
                 _ => (winUpgrade, UpgradePoints)
             };
@@ -231,12 +231,40 @@ public class Monster
         OnEnemyFind?.Invoke(enemy);
     }
 
+    public int GetSpeed(int moveSpeed)
+    {
+        var speedIndex =
+            33 * SpeedUpgrade + 
+            RoundByLevel(16 * Species.SpeedIndex);
+        
+        var speedBase = 1024 * (moveSpeed + SpeedUpgrade);
+
+        return speedBase + speedIndex;
+    }
+
+    public bool Evolve()
+    {
+        if (!CanEvolve || Species.Evolution is null)
+            return false;
+
+        Species = Species.Evolution;
+        return true;
+    }
+    
+    public bool CanEvolve =>
+        (Level, Species.Evolution, Species.Evolution?.Evolution) switch
+        {
+            (<8, _, _) => false,
+            (>=8, _, not null) => true,
+            (<13, _, _) => false,
+            (>=13, not null, _) => true,
+            _ => false
+        };
     public int CurrentXP => Experience - NeededXP(Level);
     public int LevelXP => Fibonnacci(Level + 1);
     public int Life => 2 * LifeUpgrade + RoundByLevel(2 * Species.BaseLife);
     public int PhysicalDefense => 4 * PhysicalDefenseUpgrade + RoundByLevel(4 * Species.BasePhysicalDefense);
     public int MagicalDefense => 4 * MagicalDefenseUpgrade + RoundByLevel(4 * Species.BaseMagicalDefense);
-    public int SpeedIndex => 16 * SpeedIndexUpgrade + RoundByLevel(Species.SpeedIndex);
     public int Stamina => 4 * StaminaUpgrade + RoundByLevel(8 * Species.BaseStamina);
     public int Ability => AbilityUpgrade + RoundByLevel(Species.BaseAbility);
 
@@ -302,11 +330,9 @@ public class Monster
         return s1;
     }
 
-    public static Monster FromSpecies(Species species)
+    public static Monster FromSpecies(Species species, int level = 1)
     {
-        var monster = new Monster {
-            Species = species
-        };
+        var monster = new Monster(species, level);
         monster.Heal();
         return monster;
     }
