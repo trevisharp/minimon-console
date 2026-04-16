@@ -212,6 +212,15 @@ public class Monster(Species species, int level = 1)
             return (false, false);
         }
     }
+    
+    public bool SpendStamina(int value)
+    {
+        if (CurrentStamina < value)
+            return false;
+        
+        CurrentStamina -= value;
+        return true;
+    }
 
     public bool Apply(Effect effect)
     {

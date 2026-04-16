@@ -8,4 +8,14 @@ public abstract class Move(
     public Type Type { get; set; } = type;
     public int Speed { get; init; } = speed;
     public int Cost { get; init; } = cost;
+
+    public void Use(BattleContext ctx)
+    {
+        if (!ctx.Char.SpendStamina(Cost))
+            return;
+        
+        HandleMove(ctx);
+    }
+
+    protected abstract void HandleMove(BattleContext ctx);
 }
