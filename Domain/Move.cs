@@ -9,13 +9,13 @@ public abstract class Move(
     public int Speed { get; init; } = speed;
     public int Cost { get; init; } = cost;
 
-    public void Use(BattleContext ctx)
+    public bool Use(BattleContext ctx)
     {
         if (!ctx.Char.SpendStamina(Cost))
-            return;
+            return false;
         
-        HandleMove(ctx);
+        return HandleMove(ctx);
     }
 
-    protected abstract void HandleMove(BattleContext ctx);
+    protected abstract bool HandleMove(BattleContext ctx);
 }
