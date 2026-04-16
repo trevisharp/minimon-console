@@ -34,9 +34,9 @@ public class Monster(Species species, int level = 1)
 
     public XPEarnResult EarnExperience(int xp)
     {
+        Experience += xp;
         if (Level == 20)
             return new(false, false, false);
-        Experience += xp;
         
         // S(n) = Sum of Fibonnacci = F(n + 2) - 1
         // needed = Level to get level n 
@@ -49,7 +49,7 @@ public class Monster(Species species, int level = 1)
         var needed = NeededXP(Level + 1);
         var winUpgrade = false;
 
-        while (Experience < needed && Level < 20)
+        while (Experience >= needed && Level < 20)
         {
             Level++;
 
@@ -269,8 +269,8 @@ public class Monster(Species species, int level = 1)
             (>=13, not null, _) => true,
             _ => false
         };
-    public int CurrentXP => Experience - NeededXP(Level);
-    public int LevelXP => Fibonnacci(Level + 1);
+    public int CurrentXP => Level == 20 ? 0 : Experience - NeededXP(Level);
+    public int LevelXP => Level == 20 ? 0 : 10 * Fibonnacci(Level + 1);
     public int Life => 2 * LifeUpgrade + RoundByLevel(2 * Species.BaseLife);
     public int PhysicalDefense => 4 * PhysicalDefenseUpgrade + RoundByLevel(4 * Species.BasePhysicalDefense);
     public int MagicalDefense => 4 * MagicalDefenseUpgrade + RoundByLevel(4 * Species.BaseMagicalDefense);
@@ -306,6 +306,9 @@ public class Monster(Species species, int level = 1)
         return defense;
     }
 
+    /// <summary>
+    /// Get the total XP needed to get a specific level.
+    /// </summary>
     static int NeededXP(int level)
     {
         if (level < 2)
@@ -315,11 +318,11 @@ public class Monster(Species species, int level = 1)
         // needed = Level to get level n 
         //  = Sum of all xp on next level
         //  = 10 * S(n)
-        // But level 0 and level 1 may be desconsidered, so:
-        // needed = 10 * (S(n) - 2)
+        // But level 1 may be desconsidered, so:
+        // needed = 10 * (S(n) - 1)
         // So:
-        // needed = 10 * (F(n + 2) - 3)
-        return 10 * (Fibonnacci(level + 2) - 3);
+        // needed = 10 * (F(n + 2) - 2)
+        return 10 * (Fibonnacci(level + 2) - 2);
     }
 
     static int Fibonnacci(int n)
