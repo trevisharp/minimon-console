@@ -1,7 +1,9 @@
 namespace Minimon.Domain;
 
-public record BattleContext
+public class BattleContext(Creature fst, Creature snd)
 {
-    public required Creature Char { get; init; }
-    public required Creature Enemy { get; init; }
+    public Creature Char { get; private set; } = fst;
+    public Creature Enemy { get; private set; } = snd;
+    public int TurnMoveCount { get; private set; } = 0;
+    public int TurnMoveRemaining { get; private set; } = 0;
 }

@@ -1,9 +1,26 @@
+using Minimon.Domain.Moves;
 using Minimon.Domain.Talents;
 
 namespace Minimon.Domain;
 
 public static class Indexer
 {
+    #region Simeolil
+
+    // description:
+    // Anti-Life Tank or Anti-Shield Tank
+    // Strong against effects and stamina leakers
+    static MoveSet GetSimeolilMoveSet()
+        => MoveSet.New()
+            .Add(new PunchMove(), 1)
+            .Add(new KickMove(), 1)
+            .Add(new EnganeMove(), 3)
+            .Add(new InterceptMove(), 5)
+            .Add(new WhipeMove(), 7)
+            .Add(new LeafCutMove(), 11)
+            .Add(new WaterPunchMove(), 13)
+            .Add(new FastGuardMove(), 17);
+    
     static Species? _Simeolil;
     public static Species Simeolil => _Simeolil ??=
         new() {
@@ -19,8 +36,8 @@ public static class Indexer
             BaseAbility = 4,
             SpeedIndex = 100,
             
-            Talent = new OverSkill(),
-            MoveSet = MoveSet.New()
+            Talent = new OverSkillTalent(),
+            MoveSet = GetSimeolilMoveSet()
         };
         
     static Species? _Simeont;
@@ -38,8 +55,8 @@ public static class Indexer
             BaseAbility = 5,
             SpeedIndex = 100,
             
-            Talent = new OverSkill(),
-            MoveSet = MoveSet.New()
+            Talent = new OverSkillTalent(),
+            MoveSet = GetSimeolilMoveSet()
         };
         
     static Species? _Simevine;
@@ -57,7 +74,9 @@ public static class Indexer
             BaseAbility = 5,
             SpeedIndex = 100,
             
-            Talent = new OverSkill(),
-            MoveSet = MoveSet.New()
+            Talent = new OverSkillTalent(),
+            MoveSet = GetSimeolilMoveSet()
         };
+    
+    #endregion
 }

@@ -1,6 +1,6 @@
 namespace Minimon.Domain.Talents;
 
-public class OverSkill : Talent
+public class OverSkillTalent : Talent
 {
     public override void Setup(Creature creature)
     {
@@ -29,6 +29,7 @@ public class OverSkill : Talent
         if (creature.Ability < enemy.Ability)
             return;
         
+        creature.ClearEffect();
         creature.Apply(Effect.Confident);
     }
 }

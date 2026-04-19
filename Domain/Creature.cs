@@ -19,6 +19,7 @@ public class Creature(Species species)
     public int CurrentPhysicalShield { get; private set; }
     public int CurrentMagicalShield { get; private set; }
     public int CurrentStamina { get; private set; }
+    public int CurrentEffectDuration { get; set; }
     public Effect CurrentEffect { get; private set; }
 
     public void Heal()
@@ -95,6 +96,9 @@ public class Creature(Species species)
 
     public DamageResult Recive(DamageType type, int value)
     {
+        if (this.CurrentEffect == Effect.Protected)
+            return new DamageResult(false, false, false);
+        
         OnReceiveDamage?.Invoke(value);
 
         var (PhyBreak, MagBreak) = type switch
@@ -225,7 +229,10 @@ public class Creature(Species species)
         return true;
     }
 
-    public bool Apply(Effect effect)
+    public void ClearEffect()
+        => CurrentEffect = Effect.None;
+
+    public bool Apply(Effect effect, int duration = -1)
     {
         if (CurrentEffect != Effect.None)
             return false;
@@ -233,6 +240,7 @@ public class Creature(Species species)
         if (CurrentEffect == effect)
             return false;
         
+        CurrentEffectDuration = duration;
         CurrentEffect = effect;
         OnReceiveEffect?.Invoke(effect);
         return true;
@@ -262,6 +270,12 @@ public class Creature(Species species)
     
     public void CommitTurn()
     {
+        if (CurrentEffectDuration == 0)
+            CurrentEffect = Effect.None;
+        
+        if (CurrentEffectDuration > 0)
+            CurrentEffectDuration--;
+        
         CurrentStamina = Stamina;
         OnTurn?.Invoke();
     }
@@ -271,8 +285,8 @@ public class Creature(Species species)
         {
             (<8, _, _) => false,
             (>=8, _, not null) => true,
-            (<13, _, _) => false,
-            (>=13, not null, _) => true,
+            (<14, _, _) => false,
+            (>=14, not null, _) => true,
             _ => false
         };
     public int CurrentXP => Level == 20 ? 0 : Experience - NeededXP(Level);
