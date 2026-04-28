@@ -6,27 +6,21 @@ public class Type
     public required string[] AdvantageSet { get; init; }
 
     public static readonly Type Normal = Create(nameof(Normal),
-        advantages: [ nameof(Light), nameof(Dark), nameof(Air), nameof(Eletric) ]
-    );
-    public static readonly Type Light = Create(nameof(Light),
-        advantages: [ nameof(Magnetic) ]
-    );
-    public static readonly Type Dark = Create(nameof(Dark),
-        advantages: [ nameof(Gem) ]
+        advantages: [ nameof(Magnetic), nameof(Gem), nameof(Air), nameof(Eletric) ]
     );
 
     public static readonly Type Aquatic = Create(nameof(Aquatic), 
-        advantages: [ nameof(Magma), nameof(Normal), nameof(Air) ]
+        advantages: [ nameof(Fire), nameof(Normal), nameof(Air) ]
     );
     public static readonly Type Plant = Create(nameof(Plant),
         advantages: [ nameof(Aquatic), nameof(Normal) ]
     );
-    public static readonly Type Magma = Create(nameof(Magma),
+    public static readonly Type Fire = Create(nameof(Fire),
         advantages: [ nameof(Plant), nameof(Normal) ]
     );
 
     public static readonly Type Ice = Create(nameof(Ice),
-        advantages: [ nameof(Magma), nameof(Rock), nameof(Normal) ]
+        advantages: [ nameof(Fire), nameof(Rock), nameof(Normal) ]
     );
     public static readonly Type Rock = Create(nameof(Rock),
         advantages: [ nameof(Plant), nameof(Eletric) ]
@@ -36,7 +30,7 @@ public class Type
     );
     
     public static readonly Type Gem = Create(nameof(Gem),
-        advantages: [ nameof(Ice), nameof(Eletric), nameof(Magma) ]
+        advantages: [ nameof(Ice), nameof(Eletric), nameof(Fire) ]
     );
     public static readonly Type Magnetic = Create(nameof(Magnetic),
         advantages: [ nameof(Eletric), nameof(Rock) ]
@@ -47,8 +41,8 @@ public class Type
 
     static Type[]? types = null;
     public static Type[] Types => types ??= [ 
-        Normal, Light, Dark,
-        Aquatic, Plant, Magma,
+        Normal,
+        Aquatic, Plant, Fire,
         Ice, Rock, Eletric,
         Gem, Magnetic, Air
     ];
