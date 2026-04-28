@@ -141,74 +141,18 @@ public class Creature(Species species)
 
         (bool, bool) HandleStrong(int damage)
         {
-            OnReceiveStrongDamage?.Invoke(damage);
-
-            if (CurrentMagicalShield == 0)
-            {
-                CurrentLife = Inflicts(CurrentLife, ref damage);
-                return (false, false);
-            }
-
-            if (CurrentPhysicalShield == 0)
-            {
-                CurrentLife = Inflicts(CurrentLife, ref damage);
-                return (false, false);
-            }
-
-            if (CurrentPhysicalShield < CurrentMagicalShield)
-            {
-                CurrentPhysicalShield = Inflicts(CurrentPhysicalShield, ref damage);
-                CurrentLife = Inflicts(CurrentLife, ref damage);
-                return (CurrentPhysicalShield == 0, false);
-            }
+            if (MagicalDefense <= PhysicalDefense)
+                return HandleMagical(damage);
             
-            CurrentMagicalShield = Inflicts(CurrentMagicalShield, ref damage);
-            CurrentLife = Inflicts(CurrentLife, ref damage);
-            return (false, CurrentMagicalShield == 0);
+            return HandlePhysical(damage);
         }
 
         (bool, bool) HandleWeak(int damage)
         {
-            OnReceiveWeakDamage?.Invoke(damage);
-
-            if (CurrentMagicalShield == 0 && CurrentPhysicalShield == 0)
-            {
-                CurrentLife = Inflicts(CurrentLife, ref damage);
-                return (false, false);
-            }
-
-            if (CurrentPhysicalShield > CurrentMagicalShield)
-            {
-                var diff = CurrentPhysicalShield - CurrentMagicalShield;
-                var final = int.Min(damage, diff);
-                damage -= final;
-                CurrentPhysicalShield = Inflicts(CurrentPhysicalShield, ref final);
-                if (damage == 0)
-                    return (CurrentPhysicalShield == 0, false);
-            }
-            else if (CurrentMagicalShield > CurrentPhysicalShield)
-            {
-                var diff = CurrentMagicalShield - CurrentPhysicalShield;
-                var final = int.Min(damage, diff);
-                damage -= final;
-                CurrentMagicalShield = Inflicts(CurrentMagicalShield, ref final);
-                if (damage == 0)
-                    return (false, CurrentMagicalShield == 0);
-            }
-
-            int magdam = damage / 2;
-            int phydam = damage - magdam;
-
-            CurrentMagicalShield = Inflicts(CurrentMagicalShield, ref magdam);
-            CurrentPhysicalShield = Inflicts(CurrentPhysicalShield, ref phydam);
+            if (MagicalDefense > PhysicalDefense)
+                return HandleMagical(damage);
             
-            damage = magdam + phydam;
-            
-            CurrentMagicalShield = Inflicts(CurrentMagicalShield, ref damage);
-            CurrentPhysicalShield = Inflicts(CurrentPhysicalShield, ref damage);
-            CurrentLife = Inflicts(CurrentLife, ref damage);
-            
-            return (CurrentPhysicalShield == 0, CurrentMagicalShield == 0);
+            return HandlePhysical(damage);
         }
 
         (bool, bool) HandleReal(int damage)
@@ -304,8 +248,6 @@ public class Creature(Species species)
     public event Action<int>? OnReceiveDamage;
     public event Action<int>? OnReceivePhysicalDamage;
     public event Action<int>? OnReceiveMagicalDamage;
-    public event Action<int>? OnReceiveStrongDamage;
-    public event Action<int>? OnReceiveWeakDamage;
     public event Action<int>? OnReceiveRealDamage;
     public event Action<Effect>? OnReceiveEffect;
     public event Action? OnTurn;
