@@ -26,7 +26,7 @@ void print(Creature creature)
     System.Console.WriteLine(
         $"""
         {creature.Species.Name}
-        HP: {creature.CurrentLife} / {creature.Life}=
+        HP: {creature.CurrentLife} / {creature.Life}
         PS: {creature.CurrentPhysicalShield} / {creature.PhysicalDefense}
         MS: {creature.CurrentMagicalShield} / {creature.MagicalDefense}
         """

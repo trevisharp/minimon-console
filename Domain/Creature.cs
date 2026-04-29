@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 
 namespace Minimon.Domain;
 
@@ -20,6 +21,16 @@ public class Creature(Species species)
     public Effect CurrentEffect { get; private set; }
     public Move[] CurrentMoves { get; private set; } = new Move[4];
 
+    public bool Learn(Move move, int index)
+    {
+        var moveset = Species.MoveSet.GetMoves(Level);
+        if (!moveset.Contains(move))
+            return false;
+        
+        CurrentMoves[index] = move;
+        return true;
+    }
+
     public void Heal()
     {
         CurrentLife = Life;
@@ -34,7 +45,26 @@ public class Creature(Species species)
     public void ResetMoves()
     {
         foreach (var move in CurrentMoves)
-            move.Reset();
+            move?.Reset();
+    }
+
+    public void ClearEvents()
+    {
+        OnFaint = null;
+        OnHeal = null;
+        OnPhysicalShieldBreak = null;
+        OnMagicalShieldBreak = null;
+        OnReceiveDamage = null;
+        OnReceivePhysicalDamage = null;
+        OnReceiveMagicalDamage = null;
+        OnReceiveRealDamage = null;
+        OnDealDamage = null;
+        OnDealPhysicalDamage = null;
+        OnDealMagicalDamage = null;
+        OnDealRealDamage = null;
+        OnReceiveEffect = null;
+        OnTurn = null;
+        OnEnemyFind = null;
     }
 
     public XPEarnResult EarnExperience(int xp)
@@ -168,6 +198,31 @@ public class Creature(Species species)
         }
     }
     
+    public int Deal(DamageType type, int value)
+    {
+        if (OnDealDamage != null)
+            value = OnDealDamage(value);
+        
+        value = type switch
+        {
+            DamageType.Physical when 
+                OnDealPhysicalDamage is not null 
+                => OnDealPhysicalDamage(value),
+                
+            DamageType.Magical when 
+                OnDealMagicalDamage is not null 
+                => OnDealMagicalDamage(value),
+                
+            DamageType.Real when 
+                OnDealRealDamage is not null 
+                => OnDealRealDamage(value),
+            
+            _ => value
+        };
+
+        return value;
+    }
+
     public void ClearEffect()
         => CurrentEffect = Effect.None;
 
@@ -217,6 +272,14 @@ public class Creature(Species species)
         OnTurn?.Invoke();
     }
 
+    public bool HasAdvantage(Creature other)
+    {
+        var advSet = Species.MainType.AdvantageSet
+            .Union(Species.SecondType?.AdvantageSet ?? []);
+        return advSet.Contains(other.Species.MainType.Name) ||
+            advSet.Contains(other.Species.SecondType?.Name);
+    }
+
     public bool CanEvolve =>
         (Level, Species.Evolution, Species.Evolution?.Evolution) switch
         {
@@ -240,6 +303,10 @@ public class Creature(Species species)
     public event Action<int>? OnReceivePhysicalDamage;
     public event Action<int>? OnReceiveMagicalDamage;
     public event Action<int>? OnReceiveRealDamage;
+    public event Func<int, int>? OnDealDamage;
+    public event Func<int, int>? OnDealPhysicalDamage;
+    public event Func<int, int>? OnDealMagicalDamage;
+    public event Func<int, int>? OnDealRealDamage;
     public event Action<Effect>? OnReceiveEffect;
     public event Action? OnTurn;
     public event Action<Creature>? OnEnemyFind;

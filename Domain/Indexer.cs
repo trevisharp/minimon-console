@@ -1,4 +1,5 @@
 using Minimon.Domain.Moves;
+using Minimon.Domain.Talents;
 
 namespace Minimon.Domain;
 
@@ -33,7 +34,7 @@ public static class Indexer
             BaseMagicalDefense = 0,
             SpeedIndex = 100,
             
-            Talent = null,
+            Talent = new UnfairAdvantage(),
             MoveSet = GetSimeolilMoveSet()
         };
         
@@ -50,7 +51,7 @@ public static class Indexer
             BaseMagicalDefense = 0,
             SpeedIndex = 100,
             
-            Talent = null,
+            Talent = new UnfairAdvantage(),
             MoveSet = GetSimeolilMoveSet()
         };
         
@@ -67,7 +68,7 @@ public static class Indexer
             BaseMagicalDefense = 0,
             SpeedIndex = 100,
             
-            Talent = null,
+            Talent = new UnfairAdvantage(),
             MoveSet = GetSimeolilMoveSet()
         };
     
