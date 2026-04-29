@@ -12,6 +12,7 @@ public class Creature(Species species)
     public int LifeUpgrade { get; private set; } = 0;
     public int PhysicalDefenseUpgrade { get; private set; } = 0;
     public int MagicalDefenseUpgrade { get; private set; } = 0;
+    public int TechniqueUpgrade { get; private set; } = 0;
     public int SpeedUpgrade { get; private set; } = 0;
     
     public int CurrentLife { get; private set; }
@@ -247,7 +248,8 @@ public class Creature(Species species)
 
     public int GetSpeed(int actionSpeed)
     {
-        var speedBase = 4096 * actionSpeed;
+        const int maxSpeedIndex = 8 * 1024;
+        var speedBase = maxSpeedIndex * (4 * actionSpeed + SpeedUpgrade);
         var speedIndex = 8 * Species.SpeedIndex + 33 * SpeedUpgrade;
         return RoundByLevel(speedBase + speedIndex);
     }
@@ -294,7 +296,8 @@ public class Creature(Species species)
     public int Life => 2 * LifeUpgrade + RoundByLevel(2 * Species.BaseLife);
     public int PhysicalDefense => 4 * PhysicalDefenseUpgrade + RoundByLevel(4 * Species.BasePhysicalDefense);
     public int MagicalDefense => 4 * MagicalDefenseUpgrade + RoundByLevel(4 * Species.BaseMagicalDefense);
-
+    public int Technique => 2 * TechniqueUpgrade + RoundByLevel(2 * Species.BaseTechnique);
+    
     public event Action? OnFaint;
     public event Action? OnHeal;
     public event Action? OnPhysicalShieldBreak;

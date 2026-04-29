@@ -65,6 +65,8 @@ public class LambdaTalent(Action<Creature, Events> setup) : Talent
         creature.OnReceiveEffect += events.OnReceiveEffect;
         creature.OnTurn += events.OnTurn;
         creature.OnEnemyFind += events.OnEnemyFind;
+
+        events.OnUnsetup?.Invoke();
     }
 
 }

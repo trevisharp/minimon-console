@@ -19,4 +19,5 @@ public class Events
     public Action<Effect>? OnReceiveEffect;
     public Action? OnTurn;
     public Action<Creature>? OnEnemyFind;
+    public Action? OnUnsetup;
 }

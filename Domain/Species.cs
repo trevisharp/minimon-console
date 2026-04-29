@@ -10,6 +10,7 @@ public class Species
     public required int BaseLife { get; init; }
     public required int BasePhysicalDefense { get; init; }
     public required int BaseMagicalDefense { get; init; }
+    public required int BaseTechnique { get; init; }
     public required int SpeedIndex { get; init; }
     public required MoveSet MoveSet { get; init; }
 }

@@ -30,6 +30,7 @@ public static class Indexer
             Evolution = Simeont,
 
             BaseLife = 12,
+            BaseTechnique = 0,
             BasePhysicalDefense = 0,
             BaseMagicalDefense = 0,
             SpeedIndex = 100,
@@ -47,6 +48,7 @@ public static class Indexer
             Evolution = Simevine,
 
             BaseLife = 16,
+            BaseTechnique = 0,
             BasePhysicalDefense = 0,
             BaseMagicalDefense = 0,
             SpeedIndex = 100,
@@ -64,6 +66,7 @@ public static class Indexer
             Evolution = null,
 
             BaseLife = 20,
+            BaseTechnique = 0,
             BasePhysicalDefense = 0,
             BaseMagicalDefense = 0,
             SpeedIndex = 100,
