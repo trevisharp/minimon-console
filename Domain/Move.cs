@@ -16,14 +16,6 @@ public abstract class Move(
     {
         if (CurrentCooldown > 0)
             return false;
-
-        var realCost = ctx.Char.CurrentEffect switch
-        {
-            Effect.Confident => int.Max(Cost - 2, 0),
-            _ => Cost  
-        };
-        if (!ctx.Char.SpendStamina(realCost))
-            return false;
         
         CurrentCooldown = Cooldown;
         return HandleMove(ctx);

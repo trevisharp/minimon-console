@@ -12,13 +12,10 @@ public class Creature(Species species)
     public int PhysicalDefenseUpgrade { get; private set; } = 0;
     public int MagicalDefenseUpgrade { get; private set; } = 0;
     public int SpeedUpgrade { get; private set; } = 0;
-    public int StaminaUpgrade { get; private set; } = 0;
-    public int AbilityUpgrade { get; private set; } = 0;
     
     public int CurrentLife { get; private set; }
     public int CurrentPhysicalShield { get; private set; }
     public int CurrentMagicalShield { get; private set; }
-    public int CurrentStamina { get; private set; }
     public int CurrentEffectDuration { get; set; }
     public Effect CurrentEffect { get; private set; }
 
@@ -27,7 +24,6 @@ public class Creature(Species species)
         CurrentLife = Life;
         CurrentPhysicalShield = PhysicalDefense;
         CurrentMagicalShield = MagicalDefense;
-        CurrentStamina = Stamina;
         CurrentEffect = Effect.None;
 
         OnHeal?.Invoke();
@@ -164,15 +160,6 @@ public class Creature(Species species)
         }
     }
     
-    public bool SpendStamina(int value)
-    {
-        if (CurrentStamina < value)
-            return false;
-        
-        CurrentStamina -= value;
-        return true;
-    }
-
     public void ClearEffect()
         => CurrentEffect = Effect.None;
 
@@ -220,7 +207,6 @@ public class Creature(Species species)
         if (CurrentEffectDuration > 0)
             CurrentEffectDuration--;
         
-        CurrentStamina = Stamina;
         OnTurn?.Invoke();
     }
 
@@ -238,8 +224,6 @@ public class Creature(Species species)
     public int Life => 2 * LifeUpgrade + RoundByLevel(2 * Species.BaseLife);
     public int PhysicalDefense => 4 * PhysicalDefenseUpgrade + RoundByLevel(4 * Species.BasePhysicalDefense);
     public int MagicalDefense => 4 * MagicalDefenseUpgrade + RoundByLevel(4 * Species.BaseMagicalDefense);
-    public int Stamina => StaminaUpgrade + RoundByLevel(2 * Species.BaseStamina);
-    public int Ability => AbilityUpgrade + RoundByLevel(Species.BaseAbility);
 
     public event Action? OnFaint;
     public event Action? OnHeal;

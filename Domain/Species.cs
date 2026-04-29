@@ -11,7 +11,5 @@ public class Species
     public required int BasePhysicalDefense { get; init; }
     public required int BaseMagicalDefense { get; init; }
     public required int SpeedIndex { get; init; }
-    public required int BaseStamina { get; init; }
-    public required int BaseAbility { get; init; }
     public required MoveSet MoveSet { get; init; }
 }
