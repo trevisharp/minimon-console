@@ -21,5 +21,13 @@ public abstract class Move(
         return HandleMove(ctx);
     }
 
+    public void Reset()
+    {
+        CurrentCooldown = 0;
+        HandleReset();
+    }
+
     protected abstract bool HandleMove(BattleContext ctx);
+
+    protected virtual void HandleReset() { }
 }

@@ -18,6 +18,7 @@ public class Creature(Species species)
     public int CurrentMagicalShield { get; private set; }
     public int CurrentEffectDuration { get; set; }
     public Effect CurrentEffect { get; private set; }
+    public Move[] CurrentMoves { get; private set; } = new Move[4];
 
     public void Heal()
     {
@@ -25,8 +26,15 @@ public class Creature(Species species)
         CurrentPhysicalShield = PhysicalDefense;
         CurrentMagicalShield = MagicalDefense;
         CurrentEffect = Effect.None;
+        ResetMoves();
 
         OnHeal?.Invoke();
+    }
+
+    public void ResetMoves()
+    {
+        foreach (var move in CurrentMoves)
+            move.Reset();
     }
 
     public XPEarnResult EarnExperience(int xp)
@@ -182,11 +190,10 @@ public class Creature(Species species)
         OnEnemyFind?.Invoke(enemy);
     }
 
-    public int GetSpeed(int moveSpeed, int advantage)
+    public int GetSpeed(int actionSpeed)
     {
-        var extraSpeed = SpeedUpgrade + advantage;
-        var speedBase = 4096 * (moveSpeed + extraSpeed);
-        var speedIndex = 8 * Species.SpeedIndex + 33 * extraSpeed;
+        var speedBase = 4096 * (actionSpeed + SpeedUpgrade);
+        var speedIndex = 8 * Species.SpeedIndex + 33 * SpeedUpgrade;
         return RoundByLevel(speedBase + speedIndex);
     }
 

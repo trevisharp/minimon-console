@@ -45,7 +45,7 @@ public static class Indexer
             SecondType = null,
             Evolution = Simevine,
 
-            BaseLife = 14,
+            BaseLife = 16,
             BasePhysicalDefense = 0,
             BaseMagicalDefense = 0,
             SpeedIndex = 100,
@@ -62,7 +62,7 @@ public static class Indexer
             SecondType = Type.Plant,
             Evolution = null,
 
-            BaseLife = 18,
+            BaseLife = 20,
             BasePhysicalDefense = 0,
             BaseMagicalDefense = 0,
             SpeedIndex = 100,
