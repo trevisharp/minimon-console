@@ -192,7 +192,7 @@ public class Creature(Species species)
 
     public int GetSpeed(int actionSpeed)
     {
-        var speedBase = 4096 * (actionSpeed + SpeedUpgrade);
+        var speedBase = 4096 * actionSpeed;
         var speedIndex = 8 * Species.SpeedIndex + 33 * SpeedUpgrade;
         return RoundByLevel(speedBase + speedIndex);
     }
