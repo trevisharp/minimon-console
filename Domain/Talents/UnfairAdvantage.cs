@@ -14,7 +14,7 @@ public class UnfairAdvantage() : LambdaTalent(
             if (!creature.HasAdvantage(enemy))
                 return damage;
             
-            return damage + 4;
+            return damage + 2;
         };
 
         evs.OnUnsetup += () => enemy = null;

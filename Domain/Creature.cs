@@ -14,7 +14,6 @@ public class Creature(Species species)
     public int MagicalDefenseUpgrade { get; private set; } = 0;
     public int TechniqueUpgrade { get; private set; } = 0;
     public int SpeedUpgrade { get; private set; } = 0;
-    
     public int CurrentLife { get; private set; }
     public int CurrentPhysicalShield { get; private set; }
     public int CurrentMagicalShield { get; private set; }

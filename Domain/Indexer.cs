@@ -10,7 +10,7 @@ public static class Indexer
     // description:
     // Physical Attack \ Life Resistence
     // Tank Fighter && Anti-Setup
-    static MoveSet GetSimeolilMoveSet()
+    static MoveSet GetSimevineMoveSet()
         => MoveSet.New()
             .Add(new PunchMove(), 1)
             .Add(new KickMove(), 1)
@@ -36,7 +36,7 @@ public static class Indexer
             SpeedIndex = 100,
             
             Talent = new UnfairAdvantage(),
-            MoveSet = GetSimeolilMoveSet()
+            MoveSet = GetSimevineMoveSet()
         };
         
     static Species? _Simeont;
@@ -54,7 +54,7 @@ public static class Indexer
             SpeedIndex = 100,
             
             Talent = new UnfairAdvantage(),
-            MoveSet = GetSimeolilMoveSet()
+            MoveSet = GetSimevineMoveSet()
         };
         
     static Species? _Simevine;
@@ -72,7 +72,7 @@ public static class Indexer
             SpeedIndex = 100,
             
             Talent = new UnfairAdvantage(),
-            MoveSet = GetSimeolilMoveSet()
+            MoveSet = GetSimevineMoveSet()
         };
     
     #endregion
@@ -82,7 +82,7 @@ public static class Indexer
     // description:
     // Weak Attack \ Physical Resistence
     // Bruiser Fighter && Pivot
-    static MoveSet GetLemiolilMoveSet()
+    static MoveSet GetLemiemberMoveSet()
         => MoveSet.New()
             .Add(new CutMove(), 1)
             .Add(new ScrewUpMove(), 1)
@@ -108,7 +108,7 @@ public static class Indexer
             SpeedIndex = 116,
             
             Talent = new UnfairAdvantage(),
-            MoveSet = GetLemiolilMoveSet()
+            MoveSet = GetLemiemberMoveSet()
         };
         
     static Species? _Lemiont;
@@ -126,7 +126,7 @@ public static class Indexer
             SpeedIndex = 116,
             
             Talent = new UnfairAdvantage(),
-            MoveSet = GetLemiolilMoveSet()
+            MoveSet = GetLemiemberMoveSet()
         };
         
     static Species? _Lemiember;
@@ -144,16 +144,82 @@ public static class Indexer
             SpeedIndex = 116,
             
             Talent = new UnfairAdvantage(),
-            MoveSet = GetLemiolilMoveSet()
+            MoveSet = GetLemiemberMoveSet()
         };
 
     #endregion
 
-    #region Tarsuolil
+    #region Tarsuriver
 
     // description:
     // Strong Attack \ Magical Resistence
     // Assassin Fighter && Sweeper
+    
+    static MoveSet GetTarsuriverMoveSet()
+        => MoveSet.New()
+            .Add(new ScratchMove(), 1)
+            .Add(new BreakMove(), 1);
+            // .Add(new missing(), 2)
+            // .Add(new missing(), 4)
+            // .Add(new missing(), 8)
+            // .Add(new missing(), 12)
+            // .Add(new missing(), 14)
+            // .Add(new missing(), 18);
+    
+    static Species? _Tarsuolil;
+    public static Species Tarsuolil => _Tarsuolil ??=
+        new() {
+            Name = "Tarsuolil",
+            MainType = Type.Normal,
+            SecondType = null,
+            Evolution = Tarsuont,
+
+            BaseLife = 5,
+            BaseTechnique = 4,
+            BasePhysicalDefense = 0,
+            BaseMagicalDefense = 3,
+            SpeedIndex = 132,
+            
+            Talent = new UnfairAdvantage(),
+            MoveSet = GetLemiemberMoveSet()
+        };
+        
+    static Species? _Tarsuont;
+    public static Species Tarsuont => _Tarsuont ??=
+        new() {
+            Name = "Tarsuont",
+            MainType = Type.Normal,
+            SecondType = null,
+            Evolution = Tarsuriver,
+
+            BaseLife = 6,
+            BaseTechnique = 6,
+            BasePhysicalDefense = 0,
+            BaseMagicalDefense = 4,
+            SpeedIndex = 132,
+            
+            Talent = new UnfairAdvantage(),
+            MoveSet = GetLemiemberMoveSet()
+        };
+        
+    static Species? _Tarsuriver;
+    public static Species Tarsuriver => _Tarsuriver ??=
+        new() {
+            Name = "Tarsuriver",
+            MainType = Type.Normal,
+            SecondType = Type.Aquatic,
+            Evolution = null,
+
+            BaseLife = 6,
+            BaseTechnique = 8,
+            BasePhysicalDefense = 0,
+            BaseMagicalDefense = 6,
+            SpeedIndex = 132,
+            
+            Talent = new UnfairAdvantage(),
+            MoveSet = GetTarsuriverMoveSet()
+        };
+
 
     #endregion
 }
