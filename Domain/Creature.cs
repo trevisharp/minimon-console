@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Minimon.Domain;
@@ -24,8 +25,7 @@ public class Creature(Species species)
 
     public bool Learn(Move move, int index)
     {
-        var moveset = Species.MoveSet.GetMoves(Level);
-        if (!moveset.Contains(move))
+        if (!MoveSet.Contains(move))
             return false;
         
         CurrentMoves[index] = move;
@@ -199,8 +199,11 @@ public class Creature(Species species)
         }
     }
     
-    public int Deal(DamageType type, int value)
+    public int Deal(DamageType type, int value, Random? rand = null)
     {
+        rand ??= Random.Shared;
+        value = DiceSimulation(value, Technique, rand);
+
         if (OnDealDamage != null)
             value = OnDealDamage(value);
         
@@ -297,6 +300,8 @@ public class Creature(Species species)
     public int PhysicalDefense => 4 * PhysicalDefenseUpgrade + RoundByLevel(4 * Species.BasePhysicalDefense);
     public int MagicalDefense => 4 * MagicalDefenseUpgrade + RoundByLevel(4 * Species.BaseMagicalDefense);
     public int Technique => 2 * TechniqueUpgrade + RoundByLevel(2 * Species.BaseTechnique);
+
+    public Move[] MoveSet => Species.MoveSet.GetMoves(Level);
     
     public event Action? OnFaint;
     public event Action? OnHeal;
@@ -317,6 +322,75 @@ public class Creature(Species species)
     int RoundByLevel(int value)
         => (int)float.Round((Level + 20) * value / 40);
     
+    static int DiceSimulation(int dices, int rerolls, Random rand)
+    {
+        int hits = 0;
+        int misses = 0;
+
+        RollAll();
+
+        TryBasicStrategy();
+        
+        if (rerolls == 0)
+            return hits;
+        
+        TrySmartStrategy();
+
+        return hits;
+
+        void Dice()
+        {
+            var dice = rand.Next(6);
+            if (dice is <3)
+                misses++;
+            
+            if (dice is >=3)
+                hits++;
+            
+            if (dice is <5)
+                dices--;
+        }
+
+        void RollAll()
+        {
+            while (dices > 0)
+                Dice();
+        }
+
+        void TryRerollMisses()
+        {
+            var rerollTries = int.Min(misses, rerolls);
+            misses -= rerollTries;
+            rerolls -= rerollTries;
+            dices += rerollTries;
+            
+            RollAll();
+        }
+
+        void TryBasicStrategy()
+        {   
+            while (misses > 0 && rerolls > 0)
+                TryRerollMisses();
+        }
+
+        void TryRerollHits()
+        {
+            var rerollTries = int.Min(hits, rerolls / 3);
+            hits -= rerollTries;
+            rerolls -= rerollTries;
+            dices += rerollTries;
+            
+            RollAll();
+            TryBasicStrategy();
+        }
+
+        void TrySmartStrategy()
+        {
+            while (rerolls > 3)
+                TryRerollHits();
+        }
+    }
+
     static int Inflicts(int defense, ref int damage)
     {
         if (damage > defense)
@@ -370,6 +444,11 @@ public class Creature(Species species)
     {
         var creature = new Creature(species);
         creature.Heal();
+
+        var index = 0;
+        foreach (var move in creature.MoveSet)
+            creature.Learn(move, index++);
+
         return creature;
     }
 
