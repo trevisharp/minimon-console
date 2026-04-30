@@ -3,7 +3,7 @@ namespace Minimon.Domain;
 public abstract class Move(
     string name, Type type,
     int speed = 0,
-    int cooldown = 0)
+    int cooldown = 1)
 {
     public string Name { get; init; } = name;
     public Type Type { get; set; } = type;

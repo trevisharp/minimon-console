@@ -1,10 +1,10 @@
 namespace Minimon.Domain.Moves;
 
-public class WaterPunchMove() : Move("Water Punch", Type.Aquatic, 5, 1, 1)
+public class HardPunchMove() : Move("Hard Punch", Type.Normal)
 {
     protected override bool HandleMove(BattleContext ctx)
     {
-        ctx.Enemy.Recive(DamageType.Real, 2);
+        ctx.Enemy.Recive(DamageType.Physical, Type.Normal, 6);
         return true;
     }
 }

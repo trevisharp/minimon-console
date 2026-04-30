@@ -1,10 +1,10 @@
 namespace Minimon.Domain.Moves;
 
-public class WhipeMove() : Move("Whipe", Type.Plant, 7, 3, 1)
+public class WhipeMove() : Move("Whipe", Type.Plant, 3, 3)
 {
     protected override bool HandleMove(BattleContext ctx)
     {
-        ctx.Enemy.Recive(DamageType.Weak, 6);
+        ctx.Enemy.Recive(DamageType.Physical, Type.Plant, 7);
         return true;
     }
 }

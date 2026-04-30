@@ -8,17 +8,18 @@ public static class Indexer
     #region Simeolil
 
     // description:
-    // Life-Tank \ Physical Damage
+    // Physical Attack \ Life Resistence
+    // Tank Fighter && Anti-Setup
     static MoveSet GetSimeolilMoveSet()
         => MoveSet.New()
             .Add(new PunchMove(), 1)
             .Add(new KickMove(), 1)
-            .Add(new EnganeMove(), 3)
-            .Add(new InterceptMove(), 5)
-            .Add(new WhipeMove(), 7)
-            .Add(new LeafCutMove(), 11)
-            .Add(new WaterPunchMove(), 13)
-            .Add(new FastGuardMove(), 17);
+            .Add(new LegBreakerMove(), 2)
+            .Add(new TwistArmMove(), 4)
+            .Add(new HardPunchMove(), 8)
+            .Add(new HardKickMove(), 12)
+            .Add(new WhipeMove(), 14)
+            .Add(new LightRainMove(), 18);
     
     static Species? _Simeolil;
     public static Species Simeolil => _Simeolil ??=

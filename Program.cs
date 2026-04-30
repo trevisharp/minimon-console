@@ -9,7 +9,7 @@ creature.Upgrade(Status.MagicalDefense);
 
 print(creature);
 
-creature.Heal();
+creature.Restore();
 print(creature);
 
 creature.Evolve();
@@ -18,7 +18,7 @@ print(creature);
 creature.Evolve();
 print(creature);
 
-creature.Heal();
+creature.Restore();
 print(creature);
 
 void print(Creature creature)

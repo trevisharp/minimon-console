@@ -32,7 +32,7 @@ public class Creature(Species species)
         return true;
     }
 
-    public void Heal()
+    public void Restore()
     {
         CurrentLife = Life;
         CurrentPhysicalShield = PhysicalDefense;
@@ -130,11 +130,14 @@ public class Creature(Species species)
         return false;
     }
 
+    public void Heal(int value)
+    {
+        var newLife = CurrentLife + value;
+        CurrentLife = int.Min(newLife, Life);
+    }
+
     public DamageResult Recive(DamageType type, Type elType, int value)
     {
-        if (CurrentEffect == Effect.Protected)
-            return new DamageResult(false, false, false);
-        
         if (elType.AdvantageSet.Contains(Species.MainType.Name) ||
             elType.AdvantageSet.Contains(Species.SecondType?.Name))
             value += 4;
@@ -213,11 +216,11 @@ public class Creature(Species species)
         {
             DamageType.Physical when 
                 OnDealPhysicalDamage is not null 
-                => OnDealPhysicalDamage(value + Bonus.PhysicalDamageBonus),
+                => OnDealPhysicalDamage(int.Max(value + Bonus.PhysicalDamageBonus, 1)),
                 
             DamageType.Magical when 
                 OnDealMagicalDamage is not null 
-                => OnDealMagicalDamage(value + Bonus.MagicalDamageBonus),
+                => OnDealMagicalDamage(int.Max(value + Bonus.MagicalDamageBonus, 1)),
                 
             DamageType.Real when 
                 OnDealRealDamage is not null 
@@ -271,15 +274,6 @@ public class Creature(Species species)
         return true;
     }
     
-    public void RecoverShield()
-    {
-        var physicalShield = CurrentPhysicalShield + Bonus.PhysicalRecover;
-        CurrentPhysicalShield = int.Min(physicalShield, PhysicalDefense + 8);
-        
-        var magicalShield = CurrentMagicalShield + Bonus.MagicalRecover;
-        CurrentMagicalShield = int.Min(magicalShield, MagicalDefense + 8);
-    }
-
     public void CommitTurn()
     {
         if (CurrentEffectDuration == 0)
@@ -288,7 +282,16 @@ public class Creature(Species species)
         if (CurrentEffectDuration > 0)
             CurrentEffectDuration--;
 
-        RecoverShield();
+        var physicalShield = CurrentPhysicalShield + Bonus.PhysicalRecover;
+        CurrentPhysicalShield = int.Min(physicalShield, PhysicalDefense + 8);
+        
+        var magicalShield = CurrentMagicalShield + Bonus.MagicalRecover;
+        CurrentMagicalShield = int.Min(magicalShield, MagicalDefense + 8);
+
+        var life = CurrentLife + Bonus.LifeRecover;
+        CurrentLife = int.Min(life, Life);
+
+        Bonus.CommitTurn();
         
         OnTurn?.Invoke();
     }
@@ -459,7 +462,7 @@ public class Creature(Species species)
     public static Creature FromSpecies(Species species)
     {
         var creature = new Creature(species);
-        creature.Heal();
+        creature.Restore();
 
         var index = 0;
         foreach (var move in creature.MoveSet)

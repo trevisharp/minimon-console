@@ -10,6 +10,7 @@ public class Bonus
     public int MagicalDamageBonus { get; private set; } = 0;
     public int PhysicalRecover { get; private set; } = 0;
     public int MagicalRecover { get; private set; } = 0;
+    public int LifeRecover { get; private set; } = 0;
 
     public void AddPhysicalDamage(int value, int duration)
         => Add(nameof(PhysicalDamageBonus), value, turn + duration);
@@ -23,6 +24,9 @@ public class Bonus
     public void AddMagicalRecover(int value, int duration)
         => Add(nameof(MagicalRecover), value, turn + duration);
     
+    public void AddLifeRecover(int value, int duration)
+        => Add(nameof(LifeRecover), value, turn + duration);
+
     public void CommitTurn()
     {
         turn++;
@@ -50,14 +54,18 @@ public class Bonus
 
     void Add(string name, int value, int end)
     {
-        bonus.Add((name, value, end));
         foreach (var prop in typeof(Bonus).GetProperties())
         {
             if (prop.Name != name)
                 continue;
-            var propVal = prop.GetValue(this) ?? 0;
+            var propVal = (int)(prop.GetValue(this) ?? 0);
             
-            prop.SetValue(this, (int)propVal + value);
+            var newValue = int.Clamp(propVal + value, -6, 6);
+            value = newValue - propVal;
+            
+            prop.SetValue(this, propVal + value);
+            bonus.Add((name, value, end));
+            return;
         }
     }
 
