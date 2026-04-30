@@ -1,6 +1,6 @@
 namespace Minimon.Domain.Moves;
 
-public class LightRainMove() : Move("Light Rain", Type.Aquatic, 0, 6)
+public class LightDewMove() : Move("Light Dew", Type.Plant, 0, 6)
 {
     protected override bool HandleMove(BattleContext ctx)
     {

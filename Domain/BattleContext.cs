@@ -15,4 +15,14 @@ public class BattleContext(Creature fst, Creature snd)
         Turn++;
         OnTurn?.Invoke();
     }
+
+    public void RequestSwap(bool enemy = false)
+    {
+        
+    }
+
+    public void RequestReturn(Creature creature)
+    {
+        
+    }
 }
