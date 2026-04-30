@@ -8,8 +8,7 @@ public static class Indexer
     #region Simeolil
 
     // description:
-    // Anti-Life Tank or Anti-Shield Tank
-    // Strong against effects and stamina leakers
+    // Life-Tank \ Physical Damage
     static MoveSet GetSimeolilMoveSet()
         => MoveSet.New()
             .Add(new PunchMove(), 1)

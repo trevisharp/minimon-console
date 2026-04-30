@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace Minimon.Domain;
@@ -20,6 +19,7 @@ public class Creature(Species species)
     public int CurrentPhysicalShield { get; private set; }
     public int CurrentMagicalShield { get; private set; }
     public int CurrentEffectDuration { get; set; }
+    public Bonus Bonus { get; set; } = new();
     public Effect CurrentEffect { get; private set; }
     public Move[] CurrentMoves { get; private set; } = new Move[4];
 
@@ -38,6 +38,7 @@ public class Creature(Species species)
         CurrentPhysicalShield = PhysicalDefense;
         CurrentMagicalShield = MagicalDefense;
         CurrentEffect = Effect.None;
+        Bonus.ClearBonus();
         ResetMoves();
 
         OnHeal?.Invoke();
@@ -129,10 +130,14 @@ public class Creature(Species species)
         return false;
     }
 
-    public DamageResult Recive(DamageType type, int value)
+    public DamageResult Recive(DamageType type, Type elType, int value)
     {
-        if (this.CurrentEffect == Effect.Protected)
+        if (CurrentEffect == Effect.Protected)
             return new DamageResult(false, false, false);
+        
+        if (elType.AdvantageSet.Contains(Species.MainType.Name) ||
+            elType.AdvantageSet.Contains(Species.SecondType?.Name))
+            value += 4;
         
         OnReceiveDamage?.Invoke(value);
 
@@ -201,9 +206,6 @@ public class Creature(Species species)
     
     public int Deal(DamageType type, int value, Random? rand = null)
     {
-        rand ??= Random.Shared;
-        value = DiceSimulation(value, Technique, rand);
-
         if (OnDealDamage != null)
             value = OnDealDamage(value);
         
@@ -211,11 +213,11 @@ public class Creature(Species species)
         {
             DamageType.Physical when 
                 OnDealPhysicalDamage is not null 
-                => OnDealPhysicalDamage(value),
+                => OnDealPhysicalDamage(value + Bonus.PhysicalDamageBonus),
                 
             DamageType.Magical when 
                 OnDealMagicalDamage is not null 
-                => OnDealMagicalDamage(value),
+                => OnDealMagicalDamage(value + Bonus.MagicalDamageBonus),
                 
             DamageType.Real when 
                 OnDealRealDamage is not null 
@@ -223,6 +225,9 @@ public class Creature(Species species)
             
             _ => value
         };
+
+        rand ??= Random.Shared;
+        value = DiceSimulation(value, Technique, rand);
 
         return value;
     }
@@ -251,9 +256,9 @@ public class Creature(Species species)
 
     public int GetSpeed(int actionSpeed)
     {
-        const int maxSpeedIndex = 8 * 1024;
+        const int maxSpeedIndex = 16 * 1024;
         var speedBase = maxSpeedIndex * (4 * actionSpeed + SpeedUpgrade);
-        var speedIndex = 8 * Species.SpeedIndex + 33 * SpeedUpgrade;
+        var speedIndex = 16 * Species.SpeedIndex + 65 * SpeedUpgrade;
         return RoundByLevel(speedBase + speedIndex);
     }
 
@@ -266,6 +271,15 @@ public class Creature(Species species)
         return true;
     }
     
+    public void RecoverShield()
+    {
+        var physicalShield = CurrentPhysicalShield + Bonus.PhysicalRecover;
+        CurrentPhysicalShield = int.Min(physicalShield, PhysicalDefense + 8);
+        
+        var magicalShield = CurrentMagicalShield + Bonus.MagicalRecover;
+        CurrentMagicalShield = int.Min(magicalShield, MagicalDefense + 8);
+    }
+
     public void CommitTurn()
     {
         if (CurrentEffectDuration == 0)
@@ -273,6 +287,8 @@ public class Creature(Species species)
         
         if (CurrentEffectDuration > 0)
             CurrentEffectDuration--;
+
+        RecoverShield();
         
         OnTurn?.Invoke();
     }
