@@ -138,9 +138,16 @@ public class Creature(Species species)
 
     public DamageResult Recive(DamageType type, Type elType, int value)
     {
-        if (elType.AdvantageSet.Contains(Species.MainType.Name) ||
-            elType.AdvantageSet.Contains(Species.SecondType?.Name))
-            value += 4;
+        value = (
+            elType.AdvantageSet.Contains(Species.MainType.Name),
+            elType.AdvantageSet.Contains(Species.SecondType?.Name),
+            Species.SecondType is not null
+        ) switch
+        {
+            (true, true, _) or (true, _, false) => value + 4,
+            (true, false, true) => value + 2,
+            _ => value
+        };
         
         OnReceiveDamage?.Invoke(value);
 
